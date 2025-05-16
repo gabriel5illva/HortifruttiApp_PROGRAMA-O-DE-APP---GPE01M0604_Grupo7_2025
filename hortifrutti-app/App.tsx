@@ -2,23 +2,21 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import AuthNavigator from './navigation/AuthNavigator';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import AdminNavigator from './navigation/AdminNavigator';
+
 
 const RootNavigator = () => {
-  const { isLoggedIn, role } = useAuth();
+  // Simulação de login como admin, mudar quando for rodar outros fluxos e quando o fluxo de inicio estiver pronto
+  const isLoggedIn = true;
+  const role = 'admin';
 
   if (!isLoggedIn) return <AuthNavigator />;
 
-  // Aqui você redireciona para o fluxo certo baseado no papel
   switch (role) {
     case 'admin':
-      return <></>; // AdminNavigator
-    case 'cliente':
-      return <></>; // ClienteNavigator
-
-    // fazer outros case (entregador e loja)
-    
+      return <AdminNavigator />;
     default:
-      return <></>; // Outros
+      return <AuthNavigator />;
   }
 };
 
