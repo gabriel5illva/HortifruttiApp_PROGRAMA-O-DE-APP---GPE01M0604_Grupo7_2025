@@ -17,7 +17,7 @@ if (Platform.OS === 'android') {
 }
 
 const updates = [
-  'Sistema atualizado por Fulano 1 em 15/04/2025 – melhorias de segurança implementadas.',
+  'Sistema atualizado por Fulano 1 em 15/04/2025 – melhorias de segurança implementadas via testes.',
   'Correção de bug na tela de login por Fulano 2 em 03/05/2025.',
   'Nova versão da LGPD em 12/05/2025. A LGPD é uma legislação...',
   'Ajustes visuais nas telas de entregador feitos por Fulano 3.',
