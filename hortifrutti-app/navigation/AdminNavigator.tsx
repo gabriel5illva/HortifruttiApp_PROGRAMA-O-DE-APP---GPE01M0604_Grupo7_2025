@@ -14,7 +14,7 @@ export default function AdminNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2ecc71',
+        tabBarActiveTintColor: '#2ecc71', //verde
         tabBarInactiveTintColor: '#999',
       }}
     >
