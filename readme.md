@@ -1,3 +1,5 @@
+LEIAM OS COMENTÁRIOS NO app.tsx!!!
+
 Depois de clonar o projeto, executar o comando:
 - npm install na raiz do projeto 
 
@@ -11,4 +13,4 @@ Notas:
 
 - o menu que fica embaixo da tela e dá acesso a várias páginas diferentes (home, notificações, perfil etc) deve ser feito na pasta navigation e no respectivo arquivo do fluxo (ex: se você está fazendo o fluxo do cliente, o menu deve ser feito no ClienteNavigator.tsx).
 
-- a cor usada é a #2ecc71.
+- a cor verde usada é a #2ecc71.

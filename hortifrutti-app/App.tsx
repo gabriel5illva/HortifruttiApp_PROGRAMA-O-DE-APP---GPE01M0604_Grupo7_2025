@@ -1,14 +1,16 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from './contexts/AuthContext';
 import AuthNavigator from './navigation/AuthNavigator';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AdminNavigator from './navigation/AdminNavigator';
+import ClienteNavigator from './navigation/ClienteNavigator'; //quando vocês codarem esse arquivo o erro desaparece
+import EntregadorNavigator from './navigation/EntregadorNavigator'; //quando vocês codarem esse arquivo o erro desaparece
+import LojaNavigator from './navigation/LojaNavigator'; //quando vocês codarem esse arquivo o erro desaparece
 
-
+//VOCÊS TEM QUE MUDAR AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO
 const RootNavigator = () => {
-  // Simulação de login como admin, mudar quando for rodar outros fluxos e quando o fluxo de inicio estiver pronto
-  const isLoggedIn = true;
-  const role = 'admin';
+  const isLoggedIn = true; // deixa true mesmo
+  const role = 'admin'; //TROQUEM AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO, são eles: 'admin', 'cliente', 'entregador' e 'loja'
 
   if (!isLoggedIn) return <AuthNavigator />;
 
