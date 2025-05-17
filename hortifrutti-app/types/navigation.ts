@@ -1,4 +1,5 @@
 export type AdminStackParamList = {
-  AdminHome: undefined;
-  // outras rotas depois: Notificações, Chats, etc.
+  AdminTabs: undefined;
+  HortifrutiList: undefined;
+  HortifrutiDetails: { hortifruti: { id: string; nome: string; logo: any } };
 };

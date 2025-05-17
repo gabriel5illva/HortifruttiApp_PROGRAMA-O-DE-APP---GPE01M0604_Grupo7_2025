@@ -4,13 +4,16 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  FlatList,
   LayoutAnimation,
   UIManager,
   Platform,
-  FlatList,
+  SafeAreaView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AdminStackParamList } from '../../types/navigation';
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental?.(true);
@@ -24,8 +27,11 @@ const updates = [
   'Adição do botão de rastreio em pedidos entregue por Fulano 4.',
 ];
 
-const AdminHome = () => {
+type NavigationProps = NativeStackNavigationProp<AdminStackParamList>;
+
+export default function AdminHome() {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  const navigation = useNavigation<NavigationProps>();
 
   const handlePressItem = (index: number) => {
     LayoutAnimation.easeInEaseOut();
@@ -34,52 +40,66 @@ const AdminHome = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Últimas atualizações do sistema</Text>
+      <View style={styles.centerContent}>
+        <Text style={styles.title}>Últimas atualizações do sistema</Text>
 
-      <FlatList
-        data={updates}
-        style={styles.flatList}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
+        <FlatList
+          data={updates}
+          keyExtractor={(_, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              onPress={() => handlePressItem(index)}
+              style={styles.notification}
+              activeOpacity={1}
+            >
+              <Text numberOfLines={expandedIndex === index ? undefined : 1}>{item}</Text>
+            </TouchableOpacity>
+          )}
+          style={styles.flatList}
+          showsVerticalScrollIndicator={false}
+        />
+
+        <View style={styles.actions}>
           <TouchableOpacity
-            onPress={() => handlePressItem(index)}
-            style={styles.notification}
-            activeOpacity={0.8}
+            style={styles.actionButton}
+            onPress={() => navigation.push('HortifrutiList')}
           >
-            <Text numberOfLines={expandedIndex === index ? undefined : 1}>
-              {String(item)}
-            </Text>
+            <MaterialIcons name="store" size={40} color="#2ecc71" />
+            <Text style={styles.label}>Cadastro de Hortifruti</Text>
           </TouchableOpacity>
-        )}
-      />
 
-      <View style={styles.actions}>
-        <ActionButton label="Cadastro de Hortifruti" icon="store" />
-        <ActionButton label="Cadastro de Entregador" icon="delivery-dining" />
-        <ActionButton label="Ajuda" icon="help-outline" />
+          <TouchableOpacity style={styles.actionButton}>
+            <MaterialIcons name="delivery-dining" size={40} color="#2ecc71" />
+            <Text style={styles.label}>Cadastro de Entregador</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.actionButton}>
+            <MaterialIcons name="help-outline" size={40} color="#2ecc71" />
+            <Text style={styles.label}>Ajuda</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
-};
-
-const ActionButton = ({
-  label,
-  icon,
-}: {
-  label: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
-}) => (
-  <TouchableOpacity style={styles.actionButton}>
-    <View style={{ alignItems: 'center' }}>
-      <MaterialIcons name={icon} size={40} color="#2ecc71" />
-      <Text style={styles.label}>{label}</Text>
-    </View>
-  </TouchableOpacity>
-);
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', padding: 16 },
-  title: { fontSize: 18, fontWeight: '600', marginBottom: 12 },
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'flex-start', // <-- alterado de 'center'
+    paddingHorizontal: 16,
+    paddingTop: 40, // <-- adicionado para subir suavemente
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
   flatList: {
     maxHeight: 210,
     marginBottom: 24,
@@ -106,5 +126,3 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
 });
-
-export default AdminHome;
