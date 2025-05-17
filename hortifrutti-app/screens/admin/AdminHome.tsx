@@ -73,7 +73,10 @@ export default function AdminHome() {
             <Text style={styles.label}>Cadastro de Entregador</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('Ajuda')}
+>
             <MaterialIcons name="help-outline" size={40} color="#2ecc71" />
             <Text style={styles.label}>Ajuda</Text>
           </TouchableOpacity>
@@ -90,9 +93,9 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     flex: 1,
-    justifyContent: 'flex-start', // <-- alterado de 'center'
+    justifyContent: 'flex-start',
     paddingHorizontal: 16,
-    paddingTop: 40, // <-- adicionado para subir suavemente
+    paddingTop: 40,
   },
   title: {
     fontSize: 18,
