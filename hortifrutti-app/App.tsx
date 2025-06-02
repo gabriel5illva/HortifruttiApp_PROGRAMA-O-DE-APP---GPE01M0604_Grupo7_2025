@@ -17,6 +17,12 @@ const RootNavigator = () => {
   switch (role) {
     case 'admin':
       return <AdminNavigator />;
+    case 'cliente':
+      return <ClienteNavigator />;
+    case 'entregador':
+      return <EntregadorNavigator />;
+    case 'loja':
+      return <LojaNavigator />;
     default:
       return <AuthNavigator />;
   }
