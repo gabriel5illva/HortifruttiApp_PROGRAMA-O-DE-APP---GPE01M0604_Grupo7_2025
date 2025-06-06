@@ -18,6 +18,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AdminStackParamList } from '../../types/navigation';
 import { MaterialIcons } from '@expo/vector-icons';
+import { showAlert } from '../../utils/showAlert';
+
 
 type NavigationProps = NativeStackNavigationProp<AdminStackParamList>;
 type RouteProps = RouteProp<AdminStackParamList, 'HortifrutiDetails'>;
@@ -28,22 +30,17 @@ export default function HortifrutiDetailsScreen() {
   const { hortifruti } = route.params;
 
   const handleAction = (type: 'approved' | 'rejected') => {
-    Alert.alert(
-      type === 'approved' ? 'Aprovado' : 'Reprovado',
-      `Cadastro ${type === 'approved' ? 'aprovado' : 'reprovado'} com sucesso!`,
-      [
-        {
-          text: 'Voltar para a home',
-          onPress: () => navigation.navigate('AdminTabs', { screen: 'Home' }),
-        },
-      ]
-    );
+    showAlert(
+  type === 'approved' ? 'Aprovado' : 'Reprovado',
+  `Cadastro ${type === 'approved' ? 'aprovado' : 'reprovado'} com sucesso!`,
+  () => navigation.navigate('AdminTabs', { screen: 'Home' })
+);
+
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Cabeçalho com fundo */}
         <View style={styles.headerWrapper}>
           <ImageBackground
             source={require('../../assets/hortifruti/fundo-detalhe.png')}
@@ -55,7 +52,6 @@ export default function HortifrutiDetailsScreen() {
             </TouchableOpacity>
           </ImageBackground>
 
-          {/* Imagem do hortifruti sobreposta */}
           <Image source={hortifruti.logo} style={styles.logo} resizeMode="cover" />
         </View>
 

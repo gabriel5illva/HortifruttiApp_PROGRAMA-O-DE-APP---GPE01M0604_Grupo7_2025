@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+import { showAlert } from '../../utils/showAlert';
+
 
 const pedidosMock: Record<string, { tipo: string; valor: string }> = {
   '10234': { tipo: 'endereco', valor: 'Rua A, 123' },
@@ -29,22 +31,17 @@ export default function EditarPedidoScreen() {
       setPedidoEncontrado(pedido);
       setNovoValor(pedido.valor);
     } else {
-      Alert.alert('Erro', 'Pedido não encontrado.');
-    }
+      showAlert('Erro', 'Pedido não encontrado.');
     Keyboard.dismiss();
   };
 
   const salvarAlteracoes = () => {
-    Alert.alert(
-      'Sucesso!',
-      `${pedidoEncontrado?.tipo === 'endereco' ? 'Endereço' : 'Status'} atualizado com sucesso.`,
-      [
-        {
-          text: 'Voltar para ajuda',
-          onPress: () => navigation.navigate('Ajuda'),
-        },
-      ]
-    );
+    showAlert(
+  'Sucesso!',
+  `${pedidoEncontrado?.tipo === 'endereco' ? 'Endereço' : 'Status'} atualizado com sucesso.`,
+  () => navigation.navigate('Ajuda')
+);
+
   };
 
   return (
