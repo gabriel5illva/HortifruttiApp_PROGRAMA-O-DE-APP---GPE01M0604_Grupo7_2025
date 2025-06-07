@@ -5,8 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type ClienteStackParamList = {
-  Busca: undefined;
+  BuscaCliente: undefined;
   HomeCliente: undefined;
+  MenuHort2: undefined;
 };
 
 export default function HomeCliente() {
@@ -38,7 +39,7 @@ export default function HomeCliente() {
             <Text>Filtro</Text>
           </Pressable>
         ))}
-        <Pressable onPress={() => navigation.navigate("Busca")}>
+        <Pressable onPress={() => navigation.navigate("BuscaCliente")}>
           <Ionicons name="chevron-forward" size={16} style={styles.chevronIcon} />
           </Pressable>
       </ScrollView>
@@ -54,7 +55,9 @@ export default function HomeCliente() {
         </Pressable>
       </View>
 
+      <Pressable onPress={() => navigation.navigate("MenuHort2")}>
       <View style={styles.card}>
+        
         <View style={styles.imagePlaceholder} />
         <View style={styles.cardInfo}>
           <View style={styles.cardHeader}>
@@ -67,13 +70,14 @@ export default function HomeCliente() {
           <Text style={styles.deliveryInfo}>Tempo de entrega | Taxa de entrega</Text>
         </View>
       </View>
+      </Pressable>
 
       <View style={styles.footer}>
       <Pressable style={styles.footerItem} onPress={() => navigation.navigate('HomeCliente')}>
         <View style={styles.footerIconPlaceholder} />
         <Text>Home</Text>
       </Pressable>
-      <Pressable style={styles.footerItem} onPress={() => navigation.navigate('Busca')}>
+      <Pressable style={styles.footerItem} onPress={() => navigation.navigate('BuscaCliente')}>
         <View style={styles.footerIconPlaceholder} />
         <Text>Busca</Text>
       </Pressable>

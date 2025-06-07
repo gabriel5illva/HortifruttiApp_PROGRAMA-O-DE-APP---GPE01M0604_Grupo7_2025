@@ -6,9 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 
 type ClienteStackParamList = {
   EntregaCliente: undefined;
-  Login: undefined;
+  MenuHort2: undefined;
   RastreioCliente: undefined;
-  Itens: undefined;
+  Pagamento: undefined;
 };
 
 type EntregaClienteNavigationProp = NativeStackNavigationProp<
@@ -24,8 +24,8 @@ export default function EntregaCliente() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.container}>
-        <Pressable onPress={() => navigation.navigate("Itens")}>
-          <Ionicons name="chevron-back-outline" size={40} style={styles.icon} />
+        <Pressable onPress={() => navigation.navigate("MenuHort2")}>
+          <Ionicons name="arrow-back" size={24} color="#444" />
         </Pressable>
             <Text style={styles.title}>Entrega</Text>
             <Image
@@ -64,7 +64,7 @@ export default function EntregaCliente() {
             </View>
 
             <View style={styles.card}>
-                    <Pressable style={styles.infoBlock} onPress={() => navigation.navigate('RastreioCliente')}>
+                    <Pressable style={styles.infoBlock} onPress={() => navigation.navigate('Pagamento')}>
                       <Text style={styles.title}>Pagar</Text>
                     </Pressable>
                   </View>

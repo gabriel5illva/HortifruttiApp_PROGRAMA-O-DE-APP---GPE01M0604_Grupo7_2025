@@ -12,10 +12,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type ClienteStackParamList = {
-  Busca: undefined;
+  BuscaCliente: undefined;
   HomeCliente: undefined;
-  Itens: undefined;
-  EntregaCliente: undefined;
+  ItensCliente: undefined;
+  MenuHort2: undefined;
 };
 
 export default function ProductCategoryScreen() {
@@ -28,7 +28,7 @@ export default function ProductCategoryScreen() {
     <View style={styles.container}>
 
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.navigate('Busca')}>
+        <Pressable onPress={() => navigation.navigate('BuscaCliente')}>
           <Ionicons name="arrow-back" size={24}/>
         </Pressable>
         <Text style={styles.headerTitle}>Tipo de produto 1</Text>
@@ -64,7 +64,7 @@ export default function ProductCategoryScreen() {
               keyExtractor={(item, index) => item + index}
               renderItem={({ item }) => (
                 <View style={styles.itemCard}>
-                  <Pressable onPress={() => navigation.navigate("EntregaCliente")}>
+                  <Pressable onPress={() => navigation.navigate("MenuHort2")}>
                   <View style={styles.itemImage} />
                   </Pressable>
                   <Text style={styles.itemName}>{item}</Text>
@@ -82,7 +82,7 @@ export default function ProductCategoryScreen() {
         <View style={styles.footerIconPlaceholder} />
         <Text>Home</Text>
       </Pressable>
-      <Pressable style={styles.footerItem} onPress={() => navigation.navigate('Busca')}>
+      <Pressable style={styles.footerItem} onPress={() => navigation.navigate('BuscaCliente')}>
         <View style={styles.footerIconPlaceholder} />
         <Text>Busca</Text>
       </Pressable>

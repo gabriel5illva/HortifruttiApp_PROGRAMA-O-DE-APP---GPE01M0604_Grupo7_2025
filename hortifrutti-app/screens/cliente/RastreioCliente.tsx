@@ -20,9 +20,6 @@ export default function Entrega(){
     const navigation = useNavigation<RastreioClienteNavigationProp>();
     return(
         <View style={styles.container}>
-            <Pressable onPress={() => navigation.navigate("EntregaCliente")}>
-            <Ionicons name="chevron-back-outline" size={40} style={styles.icon}/>
-            </Pressable>
             <Text style={styles.title}>Rastreio</Text>
             <Image
                     source={{ uri: 'https://cdn.pixabay.com/photo/2019/07/19/09/54/map-4348394_960_720.png' }}

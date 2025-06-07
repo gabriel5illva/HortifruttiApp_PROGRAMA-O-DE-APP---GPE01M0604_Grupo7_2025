@@ -5,9 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type ClienteStackParamList = {
-  Itens: undefined;
+  ItensCliente: undefined;
   HomeCliente: undefined;
-  Busca:undefined;
+  BuscaCliente:undefined;
 };
 
 const productTypes = [
@@ -50,7 +50,7 @@ export default function ProductTypesScreen() {
         data={productTypes}
         keyExtractor={(item, index) => `${item}-${index}`}
         renderItem={({ item }) => (
-          <Pressable style={styles.listItem} onPress={() => navigation.navigate("Itens")}>
+          <Pressable style={styles.listItem} onPress={() => navigation.navigate("ItensCliente")}>
             <Text style={styles.listText}>{item}</Text>
             <Ionicons name="chevron-forward" size={16} color="#999" />
           </Pressable>
@@ -63,7 +63,7 @@ export default function ProductTypesScreen() {
         <View style={styles.footerIconPlaceholder} />
         <Text>Home</Text>
       </Pressable>
-      <Pressable style={styles.footerItem} onPress={() => navigation.navigate('Busca')}>
+      <Pressable style={styles.footerItem} onPress={() => navigation.navigate('BuscaCliente')}>
         <View style={styles.footerIconPlaceholder} />
         <Text>Busca</Text>
       </Pressable>
