@@ -10,7 +10,7 @@ import LojaNavigator from './navigation/LojaNavigator'; //quando vocês codarem 
 //VOCÊS TEM QUE MUDAR AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO
 const RootNavigator = () => {
   const isLoggedIn = true; // deixa true mesmo
-  const role = 'admin'; //TROQUEM AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO, são eles: 'admin', 'cliente', 'entregador' e 'loja'
+  const role = 'cliente'; //TROQUEM AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO, são eles: 'admin', 'cliente', 'entregador' e 'loja'
 
   if (!isLoggedIn) return <AuthNavigator />;
 
