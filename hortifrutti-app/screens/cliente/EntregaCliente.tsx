@@ -8,6 +8,7 @@ type ClienteStackParamList = {
   EntregaCliente: undefined;
   Login: undefined;
   RastreioCliente: undefined;
+  Itens: undefined;
 };
 
 type EntregaClienteNavigationProp = NativeStackNavigationProp<
@@ -23,7 +24,7 @@ export default function EntregaCliente() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.container}>
-        <Pressable onPress={() => navigation.navigate("Login")}>
+        <Pressable onPress={() => navigation.navigate("Itens")}>
           <Ionicons name="chevron-back-outline" size={40} style={styles.icon} />
         </Pressable>
             <Text style={styles.title}>Entrega</Text>

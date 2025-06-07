@@ -15,6 +15,7 @@ type ClienteStackParamList = {
   Busca: undefined;
   HomeCliente: undefined;
   Itens: undefined;
+  EntregaCliente: undefined;
 };
 
 export default function ProductCategoryScreen() {
@@ -50,9 +51,7 @@ export default function ProductCategoryScreen() {
           <View key={index} style={styles.section}>
 
             <View style={styles.hortiHeader}>
-            <Pressable onPress={() => navigation.navigate("Itens")}>
               <View style={styles.logoPlaceholder} />
-            </Pressable>
               <View>
                 <Text style={styles.hortiName}>Nome do hortifruti</Text>
                 <Text style={styles.hortiSub}>Tempo de entrega | Taxa de entrega</Text>
@@ -65,7 +64,9 @@ export default function ProductCategoryScreen() {
               keyExtractor={(item, index) => item + index}
               renderItem={({ item }) => (
                 <View style={styles.itemCard}>
+                  <Pressable onPress={() => navigation.navigate("EntregaCliente")}>
                   <View style={styles.itemImage} />
+                  </Pressable>
                   <Text style={styles.itemName}>{item}</Text>
                   <Text style={styles.itemPrice}>$Valor</Text>
                 </View>
