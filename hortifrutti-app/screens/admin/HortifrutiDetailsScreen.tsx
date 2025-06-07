@@ -33,7 +33,10 @@ export default function HortifrutiDetailsScreen() {
     showAlert(
   type === 'approved' ? 'Aprovado' : 'Reprovado',
   `Cadastro ${type === 'approved' ? 'aprovado' : 'reprovado'} com sucesso!`,
-  () => navigation.navigate('AdminTabs', { screen: 'Home' })
+  () => navigation.reset({
+  index: 0,
+  routes: [{ name: 'Home' }],
+})
 );
 
   };

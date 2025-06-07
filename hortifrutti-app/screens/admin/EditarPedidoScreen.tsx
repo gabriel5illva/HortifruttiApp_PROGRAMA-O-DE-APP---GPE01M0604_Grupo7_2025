@@ -6,13 +6,11 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   Keyboard,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { showAlert } from '../../utils/showAlert';
-
 
 const pedidosMock: Record<string, { tipo: string; valor: string }> = {
   '10234': { tipo: 'endereco', valor: 'Rua A, 123' },
@@ -32,16 +30,16 @@ export default function EditarPedidoScreen() {
       setNovoValor(pedido.valor);
     } else {
       showAlert('Erro', 'Pedido não encontrado.');
+    }
     Keyboard.dismiss();
   };
 
   const salvarAlteracoes = () => {
     showAlert(
-  'Sucesso!',
-  `${pedidoEncontrado?.tipo === 'endereco' ? 'Endereço' : 'Status'} atualizado com sucesso.`,
-  () => navigation.navigate('Ajuda')
-);
-
+      'Sucesso!',
+      `${pedidoEncontrado?.tipo === 'endereco' ? 'Endereço' : 'Status'} atualizado com sucesso.`,
+      () => navigation.navigate('Ajuda')
+    );
   };
 
   return (

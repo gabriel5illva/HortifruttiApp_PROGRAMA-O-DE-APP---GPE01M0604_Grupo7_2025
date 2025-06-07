@@ -68,7 +68,8 @@ export default function AdminHome() {
             <Text style={styles.label}>Cadastro de Hortifruti</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton}>
+          <TouchableOpacity style={styles.actionButton}
+          onPress={() => navigation.push('EntregadorList')}>
             <MaterialIcons name="delivery-dining" size={40} color="#2ecc71" />
             <Text style={styles.label}>Cadastro de Entregador</Text>
           </TouchableOpacity>
