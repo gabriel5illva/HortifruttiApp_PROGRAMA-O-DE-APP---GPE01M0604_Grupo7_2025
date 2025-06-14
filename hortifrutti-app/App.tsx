@@ -1,16 +1,15 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { AuthProvider, useAuth } from './contexts/AuthContext'; // IMPORTA O useAuth
-import AuthNavigator from './navigation/AuthNavigator';
-import AdminNavigator from './navigation/AdminBottomTabs';
-import ClienteNavigator from './navigation/ClienteNavigator'; //quando vocês codarem esse arquivo o erro desaparece
-import EntregadorNavigator from './navigation/EntregadorNavigator'; //quando vocês codarem esse arquivo o erro desaparece
-import LojaNavigator from './navigation/LojaNavigator'; //quando vocês codarem esse arquivo o erro desaparece
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 
-//VOCÊS TEM QUE MUDAR AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO
-const RootNavigator = () => {
-  const isLoggedIn = true; // deixa true mesmo
-  const role = 'admin'; //TROQUEM AQUI PARA O FLUXO QUE VOCÊS ESTÃO TESTANDO, são eles: 'admin', 'cliente', 'entregador' e 'loja'
+// Navigators de cada fluxo
+import AuthNavigator from './navigation/AuthNavigator';
+import AdminNavigator from './navigation/AdminNavigator'; // OU AdminBottomTabs se preferir
+import ClienteNavigator from './navigation/ClienteNavigator';
+import EntregadorNavigator from './navigation/EntregadorNavigator';
+
+function RootNavigator() {
+  const { isLoggedIn, role } = useAuth();
 
   if (!isLoggedIn) return <AuthNavigator />;
 
@@ -21,10 +20,12 @@ const RootNavigator = () => {
       return <ClienteNavigator />;
     case 'entregador':
       return <EntregadorNavigator />;
+    case 'loja':
+      return <LojaNavigator />;
     default:
       return <AuthNavigator />;
   }
-};
+}
 
 export default function App() {
   return (

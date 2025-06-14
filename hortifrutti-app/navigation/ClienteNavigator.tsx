@@ -7,9 +7,9 @@ import RastreioCliente from '../screens/cliente/RastreioCliente';
 import BuscaCliente from '../screens/cliente/BuscaCliente';
 import HomeCliente from '../screens/cliente/HomeCliente';
 import ItensCliente from '../screens/cliente/ItensCliente';
-import MenuHort2 from '../screens/cliente/MenuHort2Cliente';
+import MenuHort2 from '../screens/cliente/MenuHort2';
 import PagamentoCliente from '../screens/cliente/PagamentoCliente';
-import PagAprovadoCliente from '../screens/cliente/PagAprovadoCliente';
+import PagAprovadoCliente from '../screens/cliente/PagAprovado';
 import PedidoCliente from '../screens/cliente/PedidoCliente';
 import ResumoPedidoCliente from '../screens/cliente/ResumoPedidoCliente';
 
