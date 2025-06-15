@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { supabase } from '../../lib/supabase';
+import { uploadImageAsync } from '../../lib/supabaseHelpers';
 
 const GREEN = '#2ecc71';
 
@@ -14,90 +17,75 @@ export default function RegisterEntregadorScreen() {
   const [senha, setSenha] = useState('');
   const [motoModelo, setMotoModelo] = useState('');
   const [placa, setPlaca] = useState('');
-  const [profileImage, setProfileImage] = useState(null);
-  const [cnhImage, setCnhImage] = useState(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [cnhImage, setCnhImage] = useState<string | null>(null);
 
-  function handleProfileImage() {
-    alert('Selecione uma imagem de perfil (em breve)');
+  async function handleProfileImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+    if (!result.canceled) setProfileImage(result.assets[0].uri);
   }
 
-  function handleCnhImage() {
-    alert('Selecione uma imagem da CNH (em breve)');
+  async function handleCnhImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+    if (!result.canceled) setCnhImage(result.assets[0].uri);
   }
 
-  function handleRegister() {
+  async function handleRegister() {
     if (!cpf || !nome || !telefone || !email || !senha || !motoModelo || !placa) {
       alert('Preencha todos os campos!');
       return;
     }
-    alert('Cadastro realizado! (aqui você integraria com supabase)');
-    navigation.goBack();
+    try {
+      const { data, error } = await supabase.auth.signUp({ email, password: senha });
+      if (error || !data?.user) throw error || new Error('Falha ao criar usuário.');
+      const userId = data.user.id;
+
+      let profileUrl = null, cnhUrl = null;
+      if (profileImage) profileUrl = await uploadImageAsync(profileImage, 'entregador', `profile_${userId}.jpg`);
+      if (cnhImage) cnhUrl = await uploadImageAsync(cnhImage, 'entregador', `cnh_${userId}.jpg`);
+
+      const { error: err2 } = await supabase.from('entregador').insert({
+        id: userId,
+        cpf,
+        nome,
+        telefone,
+        email,
+        moto_modelo: motoModelo,
+        placa,
+        profile_url: profileUrl,
+        cnh_url: cnhUrl,
+      });
+      if (err2) throw err2;
+
+      alert('Cadastro realizado!');
+      navigation.goBack();
+    } catch (e: any) {
+      alert('Erro no cadastro: ' + (e?.message || JSON.stringify(e)));
+    }
   }
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#f6f6f6' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f6f6f6' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backIcon}>{'\u2190'}</Text>
         </TouchableOpacity>
-
         <Text style={styles.title}>Cadastro de Entregador</Text>
-
-        <TextInput
-          style={styles.input}
-          placeholder="CPF"
-          value={cpf}
-          onChangeText={setCpf}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Nome completo"
-          value={nome}
-          onChangeText={setNome}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Telefone"
-          keyboardType="phone-pad"
-          value={telefone}
-          onChangeText={setTelefone}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Modelo da moto"
-          value={motoModelo}
-          onChangeText={setMotoModelo}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Placa"
-          value={placa}
-          onChangeText={setPlaca}
-          placeholderTextColor="#ccc"
-        />
+        <TextInput style={styles.input} placeholder="CPF" value={cpf} onChangeText={setCpf} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Nome completo" value={nome} onChangeText={setNome} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Telefone" keyboardType="phone-pad" value={telefone} onChangeText={setTelefone} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="E-mail" keyboardType="email-address" value={email} onChangeText={setEmail} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Modelo da moto" value={motoModelo} onChangeText={setMotoModelo} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Placa" value={placa} onChangeText={setPlaca} placeholderTextColor="#ccc" />
 
         <View style={styles.profileImageArea}>
           <TouchableOpacity style={styles.profileImageBox} onPress={handleProfileImage}>
@@ -109,7 +97,6 @@ export default function RegisterEntregadorScreen() {
           </TouchableOpacity>
           <Text style={styles.labelImage}>Imagem de Perfil</Text>
         </View>
-
         <View style={styles.cnhImageArea}>
           <TouchableOpacity style={styles.cnhImageBox} onPress={handleCnhImage}>
             {cnhImage ? (
@@ -120,7 +107,6 @@ export default function RegisterEntregadorScreen() {
           </TouchableOpacity>
           <Text style={styles.labelImage}>Imagem da CNH</Text>
         </View>
-
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Cadastrar Entregador</Text>
         </TouchableOpacity>

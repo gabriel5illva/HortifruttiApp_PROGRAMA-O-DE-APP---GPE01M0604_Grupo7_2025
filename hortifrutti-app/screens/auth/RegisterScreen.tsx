@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { supabase } from '../../lib/supabase';
 
 const GREEN = '#2ecc71';
 
@@ -14,7 +15,7 @@ export default function RegisterScreen() {
   const [promo, setPromo] = useState(false);
   const [error, setError] = useState('');
 
-  function handleRegister() {
+  async function handleRegister() {
     if (!nome || !email || !senha || !confirmarSenha) {
       setError('Preencha todos os campos!');
       return;
@@ -23,9 +24,35 @@ export default function RegisterScreen() {
       setError('As senhas não coincidem!');
       return;
     }
-    setError('');
-    alert('Cadastro realizado! (aqui você integraria com seu backend)');
-    navigation.replace('Login');
+    try {
+  // 1. Cria usuário no Auth
+  const { data, error } = await supabase.auth.signUp({ email, password: senha });
+  if (error || !data?.user) throw error || new Error('Falha ao criar usuário.');
+  const userId = data.user.id;
+
+  // 2. Registro na tabela de cliente/profile
+  const { error: err2 } = await supabase.from('profiles').insert({
+    id: userId,
+    nome,
+    }).select();
+
+  if (err2) {
+    console.log('Erro no insert profile:', err2);
+    console.log('DATA:', data);
+    console.log('ERROR:', error); // Adicione esse log para investigar
+    throw err2;
+  }
+
+  alert('Cadastro realizado!');
+  navigation.replace('Login');
+} catch (e: any) {
+  let msg = 'Erro desconhecido';
+  if (e?.message) msg = e.message;
+  else if (typeof e === 'string') msg = e;
+  else if (e?.error_description) msg = e.error_description;
+  else msg = JSON.stringify(e);
+  setError('Erro: ' + msg);
+}
   }
 
   return (
@@ -37,9 +64,7 @@ export default function RegisterScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backIcon}>{'\u2190'}</Text>
         </TouchableOpacity>
-
         <Text style={styles.title}>Cadastre-se</Text>
-
         <TextInput
           style={styles.input}
           placeholder="Nome completo"
@@ -86,30 +111,15 @@ export default function RegisterScreen() {
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <Text style={styles.ouText}>OU</Text>
-        <Text style={styles.socialText}>Cadastre-se com</Text>
-        <View style={styles.socialRow}>
-          <TouchableOpacity style={styles.iconBox}>
-            <FontAwesome name="google" size={28} color={GREEN} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBox}>
-            <FontAwesome name="facebook" size={28} color={GREEN} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconBox}>
-            <FontAwesome name="apple" size={28} color={GREEN} />
-          </TouchableOpacity>
-        </View>
-
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('RegisterHortifrutti')}>
-        <Text style={styles.outroCadastro}>Cadastrar como hortifruti</Text>
+          <Text style={styles.outroCadastro}>Cadastrar como hortifruti</Text>
         </TouchableOpacity>
-
         <TouchableOpacity onPress={() => navigation.navigate('RegisterEntregador')}>
-        <Text style={styles.outroCadastro}>Cadastrar como entregador</Text>
+          <Text style={styles.outroCadastro}>Cadastrar como entregador</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -182,36 +192,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  ouText: {
-    color: '#757373',
-    textAlign: 'center',
-    marginTop: 12,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  socialText: {
-    color: '#757373',
-    textAlign: 'center',
-    marginTop: 4,
-    marginBottom: 4,
-    fontSize: 15,
-  },
-  socialRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 18,
-    marginTop: 4,
-    width: '100%',
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#cfcfcf',
-    borderRadius: 7,
-    marginHorizontal: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   button: {
     backgroundColor: GREEN,
     borderRadius: 10,
@@ -234,4 +214,3 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
 });
-

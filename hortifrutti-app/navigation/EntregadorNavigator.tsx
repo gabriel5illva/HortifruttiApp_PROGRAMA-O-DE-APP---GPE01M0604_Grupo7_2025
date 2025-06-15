@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
 export default function ClienteNavigator() {
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>Cliente Navigator Placeholder</Text>
+      <Text style={styles.text}>Entregador Navigator Placeholder</Text>
     </SafeAreaView>
   );
 }

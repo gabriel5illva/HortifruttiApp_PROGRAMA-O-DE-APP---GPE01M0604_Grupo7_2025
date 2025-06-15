@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext'; // ajuste o caminho se for preciso
+import { supabase } from '../../lib/supabase';
 
 const GREEN = '#2ecc71';
 
@@ -11,22 +12,58 @@ export default function LoginScreen() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [error, setError] = useState('');
 
-  function handleEntrar() {
-    login('cliente');
+  async function handleEntrar() {
+  try {
+    console.log('INICIANDO LOGIN');
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
+    if (error || !data?.user) throw error || new Error('Falha no login.');
+    const userId = data.user.id;
+    console.log('USER AUTH ID:', userId);
+
+    const { data: cliente } = await supabase.from('profiles').select('id').eq('id', userId).single();
+    console.log('CLIENTE:', cliente);
+
+    if (cliente) {
+      console.log('É CLIENTE!');
+      login('cliente');
+      return;
+    }
+
+     const { data: horti } = await supabase.from('hortifrutis').select('id').eq('id', userId).single();
+    console.log('HORTI:', horti);
+
+    if (horti) {
+      console.log('É HORTIFRUTI!');
+      login('loja');
+      return;
+    }
+
+    const { data: entregador } = await supabase.from('entregador').select('id').eq('id', userId).single();
+    console.log('ENTREGADOR:', entregador);
+
+    if (entregador) {
+      console.log('É ENTREGADOR!');
+      login('entregador');
+      return;
+    }
+
+    setError('Tipo de usuário não encontrado!');
+    console.log('TIPO DE USUÁRIO NÃO ENCONTRADO');
+  } catch (e: any) {
+    setError('Erro: ' + (e?.message || JSON.stringify(e)));
+    console.log('ERRO NO LOGIN:', e);
   }
+}
+
 
   return (
     <View style={styles.bgContainer}>
-      {/* Seta de voltar */}
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backIcon}>{'\u2190'}</Text>
       </TouchableOpacity>
-
-      {/* Título centralizado */}
       <Text style={styles.title}>Login</Text>
-
-      {/* E-mail */}
       <TextInput
         style={styles.input}
         placeholder="E-mail"
@@ -35,8 +72,6 @@ export default function LoginScreen() {
         autoCapitalize="none"
         placeholderTextColor="#ccc"
       />
-
-      {/* Senha */}
       <TextInput
         style={styles.input}
         placeholder="Senha"
@@ -45,43 +80,16 @@ export default function LoginScreen() {
         secureTextEntry
         placeholderTextColor="#ccc"
       />
-
-      {/* Esqueci minha senha */}
-      <TouchableOpacity>
-        <Text style={styles.forgot}>Esqueci minha senha</Text>
-      </TouchableOpacity>
-
-      {/* Ou */}
-      <Text style={styles.ouText}>Ou</Text>
-
-      {/* Faça login com */}
-      <Text style={styles.socialTitle}>Faça login com</Text>
-      <View style={styles.socialRow}>
-        <TouchableOpacity style={styles.iconBox}>
-          <FontAwesome name="google" size={32} color={GREEN} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBox}>
-          <FontAwesome name="facebook" size={32} color={GREEN} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBox}>
-          <FontAwesome name="apple" size={32} color={GREEN} />
-        </TouchableOpacity>
-      </View>
-
-      {/* Botão Entrar */}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleEntrar}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-
-      {/* Cadastro */}
       <View style={styles.registerRow}>
         <Text style={styles.registerLabel}>Não tem conta?</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Register')}>
           <Text style={styles.registerLink}>Cadastre-se</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Entrar como administrador */}
       <TouchableOpacity style={styles.adminButton} onPress={() => navigation.navigate('AdminLogin')}>
         <Text style={styles.adminLink}>Entrar como administrador</Text>
       </TouchableOpacity>
@@ -132,41 +140,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#222',
   },
-  forgot: {
-    color: '#bcbcbc',
-    fontSize: 13,
-    alignSelf: 'flex-start',
-    marginBottom: 22,
-    marginLeft: 4,
-  },
-  ouText: {
-    color: GREEN,
-    marginVertical: 3,
-    fontSize: 16,
-    alignSelf: 'center',
-  },
-  socialTitle: {
-    color: GREEN,
-    fontSize: 17,
+  error: {
+    color: '#e74c3c',
+    marginBottom: 12,
     textAlign: 'center',
-    marginBottom: 10,
-    marginTop: 8,
-  },
-  socialRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 22,
-    marginTop: 6,
-    width: '100%',
-  },
-  iconBox: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#cfcfcf',
-    borderRadius: 7,
-    marginHorizontal: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    fontWeight: 'bold',
   },
   button: {
     backgroundColor: GREEN,

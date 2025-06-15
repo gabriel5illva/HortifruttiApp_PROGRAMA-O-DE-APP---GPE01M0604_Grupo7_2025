@@ -22,8 +22,6 @@ export default function ClienteNavigator() {
       <Stack.Screen name="HomeCliente" component={HomeCliente} />
       <Stack.Screen name="BuscaCliente" component={BuscaCliente} />
       <Stack.Screen name="RastreioCliente" component={RastreioCliente} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Admin" component={AdminNavigator} />
       <Stack.Screen name="ResumoPedidoCliente" component={ResumoPedidoCliente} />
       <Stack.Screen name="PedidoCliente" component={PedidoCliente} />
       <Stack.Screen name="PagamentoAprovado" component={PagAprovadoCliente} />

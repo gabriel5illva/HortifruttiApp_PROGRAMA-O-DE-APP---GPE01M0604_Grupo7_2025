@@ -2,104 +2,89 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { supabase } from '../../lib/supabase';
+import { uploadImageAsync } from '../../lib/supabaseHelpers';
 
 const GREEN = '#2ecc71';
 
 export default function RegisterHortifruttiScreen() {
   const navigation = useNavigation();
-  // Campos do formulário
   const [cnpj, setCnpj] = useState('');
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [endereco, setEndereco] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<string | null>(null);
 
-  // Futuramente: imagens
-  const [profileImage, setProfileImage] = useState(null);
-  const [coverImage, setCoverImage] = useState(null);
-
-  function handleProfileImage() {
-    // Em breve: usar ImagePicker ou upload para supabase
-    alert('Selecione uma imagem de perfil (em breve)');
+  async function handleProfileImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+    if (!result.canceled) setProfileImage(result.assets[0].uri);
   }
 
-  function handleCoverImage() {
-    // Em breve: usar ImagePicker ou upload para supabase
-    alert('Selecione uma imagem de capa (em breve)');
+  async function handleCoverImage() {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+    if (!result.canceled) setCoverImage(result.assets[0].uri);
   }
 
-  function handleRegister() {
-    if (!cnpj || !nome || !telefone || !endereco || !email || !senha) {
-      alert('Preencha todos os campos!');
-      return;
-    }
-    alert('Cadastro realizado! (aqui você integraria com supabase)');
+  async function handleRegister() {
+  if (!cnpj || !nome || !telefone || !endereco || !email || !senha) {
+    alert('Preencha todos os campos!');
+    return;
+  }
+  try {
+    // 1. Cria usuário no Auth
+    const { data, error } = await supabase.auth.signUp({ email, password: senha });
+    if (error || !data?.user) throw error || new Error('Falha ao criar usuário.');
+    const userId = data.user.id;
+
+    // 2. Upload das imagens
+    let profileUrl = null, coverUrl = null;
+    if (profileImage) profileUrl = await uploadImageAsync(profileImage, 'hortifrutis', `profile_${userId}.jpg`);
+    if (coverImage) coverUrl = await uploadImageAsync(coverImage, 'hortifrutis', `cover_${userId}.jpg`);
+
+    // 3. Registro na tabela
+    const { error: err2 } = await supabase.from('hortifrutis').insert({
+      id: userId,
+      cnpj,
+      telefone,
+      endereco,
+      profile_image_url: profileUrl,
+      cover_image_url: coverUrl,
+    });
+    if (err2) throw err2;
+
+    alert('Cadastro realizado!');
     navigation.goBack();
+  } catch (e: any) {
+    alert('Erro no cadastro: ' + (e?.message || JSON.stringify(e)));
   }
+}
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: '#f6f6f6' }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f6f6f6' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
-        {/* Seta de voltar */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Text style={styles.backIcon}>{'\u2190'}</Text>
         </TouchableOpacity>
-
-        {/* Título */}
         <Text style={styles.title}>Cadastro de Hortifrutti</Text>
+        <TextInput style={styles.input} placeholder="CNPJ" value={cnpj} onChangeText={setCnpj} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Nome fantasia" value={nome} onChangeText={setNome} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Telefone" keyboardType="phone-pad" value={telefone} onChangeText={setTelefone} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Endereço" value={endereco} onChangeText={setEndereco} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="E-mail" keyboardType="email-address" value={email} onChangeText={setEmail} placeholderTextColor="#ccc" />
+        <TextInput style={styles.input} placeholder="Senha" secureTextEntry value={senha} onChangeText={setSenha} placeholderTextColor="#ccc" />
 
-        {/* Inputs */}
-        <TextInput
-          style={styles.input}
-          placeholder="CNPJ"
-          value={cnpj}
-          onChangeText={setCnpj}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Nome fantasia"
-          value={nome}
-          onChangeText={setNome}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Telefone"
-          keyboardType="phone-pad"
-          value={telefone}
-          onChangeText={setTelefone}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Endereço"
-          value={endereco}
-          onChangeText={setEndereco}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-          placeholderTextColor="#ccc"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-          placeholderTextColor="#ccc"
-        />
-
-        {/* Área da imagem de capa */}
         <View style={styles.coverImageArea}>
           <TouchableOpacity style={styles.coverImageButton} onPress={handleCoverImage}>
             {coverImage ? (
@@ -108,7 +93,6 @@ export default function RegisterHortifruttiScreen() {
               <FontAwesome name="camera" size={28} color="#bcbcbc" />
             )}
           </TouchableOpacity>
-          {/* Quadrado para imagem de perfil sobreposto */}
           <TouchableOpacity style={styles.profileImageBox} onPress={handleProfileImage}>
             {profileImage ? (
               <Image source={{ uri: profileImage }} style={styles.profileImage} />
@@ -117,8 +101,6 @@ export default function RegisterHortifruttiScreen() {
             )}
           </TouchableOpacity>
         </View>
-
-        {/* Botão */}
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Cadastrar Hortifruti</Text>
         </TouchableOpacity>
@@ -128,6 +110,7 @@ export default function RegisterHortifruttiScreen() {
 }
 
 const styles = StyleSheet.create({
+  // ... seus estilos
   container: {
     flex: 1,
     paddingHorizontal: 22,
@@ -225,4 +208,3 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
 });
-
