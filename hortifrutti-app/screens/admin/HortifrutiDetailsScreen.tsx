@@ -1,45 +1,85 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  ScrollView,
-  ImageBackground,
-  SafeAreaView,
+  View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, SafeAreaView, Alert, TextInput,
 } from 'react-native';
-import {
-  useNavigation,
-  useRoute,
-  RouteProp,
-} from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AdminStackParamList } from '../../types/navigation';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { showAlert } from '../../utils/showAlert';
-
-
-type NavigationProps = NativeStackNavigationProp<AdminStackParamList>;
-type RouteProps = RouteProp<AdminStackParamList, 'HortifrutiDetails'>;
+import { supabase } from '../../lib/supabase';
 
 export default function HortifrutiDetailsScreen() {
-  const navigation = useNavigation<NavigationProps>();
-  const route = useRoute<RouteProps>();
-  const { hortifruti } = route.params;
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { hortifruti } = route.params || {};
 
-  const handleAction = (type: 'approved' | 'rejected') => {
-    showAlert(
-  type === 'approved' ? 'Aprovado' : 'Reprovado',
-  `Cadastro ${type === 'approved' ? 'aprovado' : 'reprovado'} com sucesso!`,
-  () => navigation.reset({
-  index: 0,
-  routes: [{ name: 'Home' }],
-})
-);
+  const [nome, setNome] = useState(hortifruti?.nome ?? '');
+  const [cnpj, setCnpj] = useState(hortifruti?.cnpj ?? '');
+  const [telefone, setTelefone] = useState(hortifruti?.telefone ?? '');
+  const [endereco, setEndereco] = useState(hortifruti?.endereco ?? '');
+  const [saving, setSaving] = useState(false);
 
-  };
+  if (!hortifruti) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Erro: Hortifruti não informado!</Text>
+      </View>
+    );
+  }
+
+  // Atualizar status
+  async function handleStatus(status: 'aprovado' | 'reprovado') {
+    setSaving(true);
+    const { error } = await supabase.from('hortifrutis')
+      .update({ status })
+      .eq('id', hortifruti.id);
+    setSaving(false);
+    if (!error) {
+      Alert.alert('Sucesso', `Cadastro ${status}!`);
+      navigation.goBack();
+    } else {
+      Alert.alert('Erro', error.message);
+    }
+  }
+
+  // Editar info básica
+  async function handleEdit() {
+    setSaving(true);
+    const { error } = await supabase.from('hortifrutis')
+      .update({ nome, cnpj, telefone, endereco })
+      .eq('id', hortifruti.id);
+    setSaving(false);
+    if (!error) {
+      Alert.alert('Editado!', 'Dados alterados.');
+      navigation.goBack();
+    } else {
+      Alert.alert('Erro', error.message);
+    }
+  }
+
+  // Excluir (extra: botão se quiser)
+  async function handleDelete() {
+    Alert.alert(
+      'Excluir hortifruti',
+      'Tem certeza?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            setSaving(true);
+            const { error } = await supabase.from('hortifrutis').delete().eq('id', hortifruti.id);
+            setSaving(false);
+            if (!error) {
+              Alert.alert('Excluído!', 'Hortifruti removido.');
+              navigation.goBack();
+            } else {
+              Alert.alert('Erro', error.message);
+            }
+          }
+        }
+      ]
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -54,29 +94,30 @@ export default function HortifrutiDetailsScreen() {
               <MaterialIcons name="arrow-back" size={28} color="#fff" />
             </TouchableOpacity>
           </ImageBackground>
-
-          <Image source={hortifruti.logo} style={styles.logo} resizeMode="cover" />
+          <Image
+            source={hortifruti.profile_image_url ? { uri: hortifruti.profile_image_url } : require('../../assets/hortifruti/logo1.png')}
+            style={styles.logo}
+            resizeMode="cover"
+          />
         </View>
-
-        <Text style={styles.name}>{hortifruti.nome}</Text>
-
-        <View style={styles.info}>
-          <Text style={styles.label}>CNPJ:</Text>
-          <Text>00.000.000/0001-00</Text>
-          <Text style={styles.label}>Endereço:</Text>
-          <Text>Rua das Frutas, 123 - Centro</Text>
-          <Text style={styles.label}>Tempo de Entrega:</Text>
-          <Text>Entregas locais em até 24h</Text>
-          <Text style={styles.label}>Tipo de produto:</Text>
-          <Text>Produtos orgânicos</Text>
-        </View>
+        {/* Editáveis */}
+        <TextInput style={styles.editInput} value={nome} onChangeText={setNome} placeholder="Nome" />
+        <TextInput style={styles.editInput} value={cnpj} onChangeText={setCnpj} placeholder="CNPJ" />
+        <TextInput style={styles.editInput} value={telefone} onChangeText={setTelefone} placeholder="Telefone" />
+        <TextInput style={styles.editInput} value={endereco} onChangeText={setEndereco} placeholder="Endereço" />
 
         <View style={styles.buttons}>
-          <TouchableOpacity style={styles.buttonApprove} onPress={() => handleAction('approved')}>
+          <TouchableOpacity style={styles.buttonApprove} onPress={() => handleStatus('aprovado')} disabled={saving}>
             <Text style={styles.buttonText}>Aprovar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.buttonReject} onPress={() => handleAction('rejected')}>
+          <TouchableOpacity style={styles.buttonReject} onPress={() => handleStatus('reprovado')} disabled={saving}>
             <Text style={styles.buttonText}>Reprovar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonEdit} onPress={handleEdit} disabled={saving}>
+            <Text style={styles.buttonText}>Salvar edição</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonDelete} onPress={handleDelete} disabled={saving}>
+            <Text style={styles.buttonText}>Excluir</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -86,73 +127,38 @@ export default function HortifrutiDetailsScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#fff' },
-  scroll: {
-    alignItems: 'center',
-    paddingBottom: 40,
-  },
+  scroll: { alignItems: 'center', paddingBottom: 40 },
   headerWrapper: {
-    width: '100%',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    marginBottom: 60,
+    width: '100%', backgroundColor: '#fff', alignItems: 'center', marginBottom: 60,
   },
-  headerBackground: {
-    width: '100%',
-    height: 80,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    zIndex: 10,
-  },
+  headerBackground: { width: '100%', height: 80 },
+  backButton: { position: 'absolute', top: 16, left: 16, zIndex: 10 },
   logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-    backgroundColor: '#eee',
-    position: 'absolute',
-    bottom: -50,
-    zIndex: 5,
+    width: 100, height: 100, borderRadius: 12, backgroundColor: '#eee',
+    position: 'absolute', bottom: -50, zIndex: 5,
   },
-  name: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginTop: 60,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  info: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 20,
-    width: '100%',
-    marginBottom: 30,
-  },
-  label: {
-    fontWeight: 'bold',
-    marginTop: 10,
-  },
-  buttons: {
-    width: '100%',
-    alignItems: 'center',
-    gap: 12,
-  },
-  buttonApprove: {
-    backgroundColor: '#2ecc71',
-    padding: 12,
+  editInput: {
+    width: '90%',
+    borderColor: '#eee',
+    borderWidth: 1,
     borderRadius: 8,
-    minWidth: 200,
-    alignItems: 'center',
+    marginVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
+  },
+  buttons: { width: '100%', alignItems: 'center', gap: 8, marginTop: 18 },
+  buttonApprove: {
+    backgroundColor: '#2ecc71', padding: 12, borderRadius: 8, minWidth: 200, alignItems: 'center',
   },
   buttonReject: {
-    backgroundColor: '#e74c3c',
-    padding: 12,
-    borderRadius: 8,
-    minWidth: 200,
-    alignItems: 'center',
+    backgroundColor: '#e74c3c', padding: 12, borderRadius: 8, minWidth: 200, alignItems: 'center',
   },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+  buttonEdit: {
+    backgroundColor: '#3498db', padding: 12, borderRadius: 8, minWidth: 200, alignItems: 'center',
   },
+  buttonDelete: {
+    backgroundColor: '#aaa', padding: 12, borderRadius: 8, minWidth: 200, alignItems: 'center',
+  },
+  buttonText: { color: '#fff', fontWeight: 'bold' },
 });
