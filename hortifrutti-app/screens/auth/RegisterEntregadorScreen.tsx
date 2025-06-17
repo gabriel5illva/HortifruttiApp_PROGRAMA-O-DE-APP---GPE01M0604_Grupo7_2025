@@ -39,38 +39,50 @@ export default function RegisterEntregadorScreen() {
   }
 
   async function handleRegister() {
-    if (!cpf || !nome || !telefone || !email || !senha || !motoModelo || !placa) {
-      alert('Preencha todos os campos!');
-      return;
-    }
-    try {
-      const { data, error } = await supabase.auth.signUp({ email, password: senha });
-      if (error || !data?.user) throw error || new Error('Falha ao criar usuário.');
-      const userId = data.user.id;
-
-      let profileUrl = null, cnhUrl = null;
-      if (profileImage) profileUrl = await uploadImageAsync(profileImage, 'entregador', `profile_${userId}.jpg`);
-      if (cnhImage) cnhUrl = await uploadImageAsync(cnhImage, 'entregador', `cnh_${userId}.jpg`);
-
-      const { error: err2 } = await supabase.from('entregador').insert({
-        id: userId,
-        cpf,
-        nome,
-        telefone,
-        email,
-        moto_modelo: motoModelo,
-        placa,
-        profile_url: profileUrl,
-        cnh_url: cnhUrl,
-      });
-      if (err2) throw err2;
-
-      alert('Cadastro realizado!');
-      navigation.goBack();
-    } catch (e: any) {
-      alert('Erro no cadastro: ' + (e?.message || JSON.stringify(e)));
-    }
+  if (!cpf || !nome || !telefone || !email || !senha || !motoModelo || !placa) {
+    alert('Preencha todos os campos!');
+    return;
   }
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password: senha });
+    if (error || !data?.user) throw error || new Error('Falha ao criar usuário.');
+    const userId = data.user.id;
+
+    let profileUrl = null, cnhUrl = null;
+    if (profileImage) profileUrl = await uploadImageAsync(profileImage, 'entregador', `profile_${userId}.jpg`);
+    if (cnhImage) cnhUrl = await uploadImageAsync(cnhImage, 'entregador', `cnh_${userId}.jpg`);
+
+    const { data: insertData, error: err2 } = await supabase.from('entregadores').insert({
+      id: userId,
+      cpf,
+      nome,
+      telefone,
+      email,
+      moto_modelo: motoModelo,
+      placa,
+      profile_url: profileUrl,
+      cnh_url: cnhUrl,
+    });
+    console.log('Insert response:', { insertData, err2 });
+
+    if (err2) throw err2;
+
+    alert('Cadastro realizado!');
+    navigation.goBack();
+  } catch (e: any) {
+    console.error('Erro detalhado:', e);
+
+    let msg = 'Erro desconhecido';
+    if (typeof e === 'string') msg = e;
+    else if (e?.message) msg = e.message;
+    else if (e?.error_description) msg = e.error_description;
+    else if (e?.details) msg = e.details;
+    else if (e?.code) msg = `Código: ${e.code}`;
+    else if (e && typeof e === 'object') msg = JSON.stringify(e);
+
+    alert('Erro no cadastro: ' + msg);
+  }
+}
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: '#f6f6f6' }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>

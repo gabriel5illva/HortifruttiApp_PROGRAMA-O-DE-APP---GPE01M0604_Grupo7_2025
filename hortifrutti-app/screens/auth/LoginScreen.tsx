@@ -27,7 +27,7 @@ export default function LoginScreen() {
 
     if (cliente) {
       console.log('É CLIENTE!');
-      login('cliente');
+      login('cliente', userId);
       return;
     }
 
@@ -36,16 +36,16 @@ export default function LoginScreen() {
 
     if (horti) {
       console.log('É HORTIFRUTI!');
-      login('loja');
+      login('loja', userId);
       return;
     }
 
-    const { data: entregador } = await supabase.from('entregador').select('id').eq('id', userId).single();
+    const { data: entregador } = await supabase.from('entregadores').select('id').eq('id', userId).single();
     console.log('ENTREGADOR:', entregador);
 
     if (entregador) {
       console.log('É ENTREGADOR!');
-      login('entregador');
+      login('entregador', userId);
       return;
     }
 

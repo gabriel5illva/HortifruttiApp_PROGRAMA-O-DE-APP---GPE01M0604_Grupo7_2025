@@ -26,7 +26,7 @@ export default function EntregadorDetailsScreen() {
   useEffect(() => { fetchEntregador(); }, []);
 
   async function updateStatus(status: 'aprovado' | 'reprovado') {
-    const { error } = await supabase.from('entregadores').update({ status }).eq('id', entregadorId);
+    const { error } = await supabase.from('entregadores').update({ status_aprovacao: status }).eq('id', entregadorId);
     if (error) Alert.alert('Erro', error.message);
     else {
       Alert.alert('Sucesso', `Entregador ${status === 'aprovado' ? 'aprovado' : 'reprovado'}!`);
@@ -80,7 +80,7 @@ export default function EntregadorDetailsScreen() {
           <Text style={styles.label}>Moto:</Text>
           <Text>{entregador.moto_modelo} | {entregador.placa}</Text>
           <Text style={styles.label}>Status:</Text>
-          <Text>{entregador.status}</Text>
+          <Text>{entregador.status_aprovacao}</Text> {/* Alterado aqui */}
           {entregador.cnh_url &&
             <>
               <Text style={styles.label}>CNH:</Text>

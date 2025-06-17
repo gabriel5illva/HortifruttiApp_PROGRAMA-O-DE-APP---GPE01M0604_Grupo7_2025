@@ -56,6 +56,7 @@ export default function RegisterHortifruttiScreen() {
     // 3. Registro na tabela
     const { error: err2 } = await supabase.from('hortifrutis').insert({
       id: userId,
+      nome,
       cnpj,
       telefone,
       endereco,
