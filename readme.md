@@ -7,8 +7,6 @@ PEDRO VITOR OLIVEIRA MATOS,
 RENAN GAMA OLIVEIRA DA SILVA, 
 SABRINA SOUZA SILVA
 
-LEIAM OS COMENTÁRIOS NO app.tsx!!!
-
 Depois de clonar o projeto, executar o comando:
 - npm install na raiz do projeto 
 
@@ -17,6 +15,8 @@ Para rodar o projeto:
 - npx expo start
 
 Notas:
+
+- os admins são cadastrados diretamente no supabase, o usuário para entrar no fluxo do admin pela tela de login é "123456789" e a senha é "senha123".
 
 - os icones são do pacote @expo/vector-icons, adicionado automaticamente quando damos create-expo-app. Para conferir os icones disponíveis e seus nomes, basta acessar o site icons.expo.fyi
 
