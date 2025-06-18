@@ -35,3 +35,18 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# IDE-specific
+.vscode/
+.idea/
+*.iml
