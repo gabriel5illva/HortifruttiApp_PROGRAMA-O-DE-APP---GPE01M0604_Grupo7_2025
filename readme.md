@@ -14,6 +14,8 @@ Para rodar o projeto:
 - npm install -g expo-cli
 - npx expo start
 
+VIDEO DO APP RODANDO: https://youtu.be/SBEPZIrfBSc
+
 Notas:
 
 - os admins são cadastrados diretamente no supabase, o usuário para entrar no fluxo do admin pela tela de login é "123456789" e a senha é "senha123".
